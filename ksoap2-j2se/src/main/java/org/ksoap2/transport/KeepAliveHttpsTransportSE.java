@@ -24,6 +24,10 @@ import java.io.IOException;
  */
 public class KeepAliveHttpsTransportSE extends HttpsTransportSE
 {
+    
+    //connection instance, used for setting the SSLSocketFactory
+    private HttpsServiceConnectionSE serviceConnection;
+    
     public KeepAliveHttpsTransportSE (String host, int port, String file, int timeout) {
         super(host, port, file, timeout);
     }
@@ -37,10 +41,15 @@ public class KeepAliveHttpsTransportSE extends HttpsTransportSE
     //@Override
     public ServiceConnection getServiceConnection() throws IOException
     {
-        ServiceConnection serviceConnection = 
-                new HttpsServiceConnectionSEIgnoringConnectionClose(host, port, file, timeout);
-        serviceConnection.setRequestProperty("Connection", "keep-alive");
-        return serviceConnection;
+        
+        if(serviceConnection != null) {
+            return serviceConnection;
+        } else {
+            serviceConnection = new HttpsServiceConnectionSEIgnoringConnectionClose(host, port, file, timeout);
+            serviceConnection.setRequestProperty("Connection", "keep-alive");
+            return serviceConnection;
+        }
+        
     }
 
 }
